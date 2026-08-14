@@ -1,0 +1,53 @@
+{
+  "name": "forge",
+  "productName": "Forge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build & sign Expo/React Native apps locally on Windows (Android) or via macOS CI (iOS), with Play Store & TestFlight submission",
+  "main": "src/main.js",
+  "author": "Evan",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test \"test/**/*.test.js\"",
+    "dist": "electron-builder --win portable",
+    "dist:dir": "electron-builder --win dir",
+    "license": "node tools/mint-license.js",
+    "portal": "node tools/portal.js"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.evanevoo.forge",
+    "productName": "Forge",
+    "copyright": "Copyright \u00a9 2026 Evan Korial",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "renderer/**/*",
+      "templates/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "Forge-${version}-portable.${ext}"
+    },
+    "portable": {
+      "artifactName": "Forge-${version}-portable.${ext}",
+      "unpackDirName": "forge"
+    }
+  }
+}

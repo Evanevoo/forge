@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forge — Local Builds for React Native</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 60px 20px;
+            background: white;
+            margin: 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        section h2 {
+            font-size: 2em;
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .feature {
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .feature h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .cta {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin: 10px 10px 10px 0;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .cta:hover {
+            background: #764ba2;
+        }
+
+        .cta-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #667eea;
+        }
+
+        .cta-secondary:hover {
+            background: #e8e8e8;
+        }
+
+        .pricing {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .price-card {
+            border: 2px solid #ddd;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .price-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .price-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .price-card .price {
+            font-size: 2.5em;
+            color: #667eea;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .price-card ul {
+            list-style: none;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .price-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .price-card li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 30px auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 1em;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+        }
+
+        footer p {
+            margin: 10px 0;
+        }
+
+        .beta-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .comparison {
+            overflow-x: auto;
+            margin: 30px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .checkmark {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .xmark {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>⚒️ Forge</h1>
+            <p>Build & sign React Native releases locally — no cloud, no subscription</p>
+            <span class="beta-badge">BETA — Free to download</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero / What is Forge -->
+        <section>
+            <h2>What is Forge?</h2>
+            <p style="font-size: 1.1em; margin-bottom: 20px;">
+                Forge is a Windows desktop app that builds and signs React Native releases entirely on your machine —
+                <strong>Android locally</strong>, <strong>iOS via free GitHub Actions</strong>. No cloud build queue. No per-build cost. No EAS dependency.
+            </p>
+            <div class="features">
+                <div class="feature">
+                    <h3>🤖 Android</h3>
+                    <p>Build and sign locally on Windows with Gradle. Full control, zero cloud cost.</p>
+                </div>
+                <div class="feature">
+                    <h3>🍎 iOS</h3>
+                    <p>Create certificates on Windows, compile on free GitHub Actions runners, submit to TestFlight from your desktop. No Mac required.</p>
+                </div>
+                <div class="feature">
+                    <h3>🏪 Submit Anywhere</h3>
+                    <p>Upload to Google Play or TestFlight directly. Version management, crash-reporter control, all built in.</p>
+                </div>
+                <div class="feature">
+                    <h3>💻 Windows-First</h3>
+                    <p>Designed for Windows React Native developers. GUI, not CLI. Offline-first. Never asks for your cloud creds.</p>
+                </div>
+                <div class="feature">
+                    <h3>🔐 Offline License</h3>
+                    <p>Ed25519 offline validation. No server, no phone-home, no internet required to use your license.</p>
+                </div>
+                <div class="feature">
+                    <h3>💰 One-Time Fee</h3>
+                    <p>Buy once, use forever. No subscription. Perpetual license key.</p>
+                </div>
+            </div>
+            <div style="margin-top: 30px;">
+                <a href="#download" class="cta">Download Beta (Free)</a>
+                <a href="#docs" class="cta cta-secondary">Read the Docs</a>
+            </div>
+        </section>
+
+        <!-- How It Compares -->
+        <section>
+            <h2>How Forge Compares</h2>
+            <div class="comparison">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Forge</th>
+                            <th>EAS Build</th>
+                            <th>Fastlane</th>
+                            <th>DIY GitHub Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Windows-first</strong></td>
+                            <td class="checkmark">✓</td>
+                            <td class="xmark">✗</td>
+                            <td class="xmark">✗</td>
+                            <td class="checkmark">✓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Android local builds</strong></td>
+                            <td class="checkmark">✓</td>
+                            <td class="xmark">✗</td>
+                            <td class="checkmark">✓</td>
+                            <td class="checkmark">✓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>iOS without Mac</strong></td>
+                            <td class="checkmark">✓</td>
+                            <td class="xmark">✗</td>
+                            <td class="xmark">✗</td>
+                            <td class="checkmark">✓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GUI interface</strong></td>
+                            <td class="checkmark">✓</td>
+                            <td class="checkmark">✓</td>
+                            <td class="xmark">✗</td>
+                            <td class="xmark">✗</td>
+                        </tr>
+                        <tr>
+                            <td><strong>One-time payment</strong></td>
+                            <td class="checkmark">✓</td>
+                            <td class="xmark">✗</td>
+                            <td class="checkmark">✓</td>
+                            <td class="checkmark">✓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Offline license</strong></td>
+                            <td class="checkmark">✓</td>
+                            <td class="xmark">✗</td>
+                            <td class="checkmark">✓</td>
+                            <td class="checkmark">✓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>No per-build cost</strong></td>
+                            <td class="checkmark">✓</td>
+                            <td class="xmark">✗</td>
+                            <td class="checkmark">✓</td>
+                            <td class="checkmark">✓</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Pricing -->
+        <section id="pricing">
+            <h2>Pricing</h2>
+            <p style="text-align: center; font-size: 1.1em; margin-bottom: 30px;">
+                Simple, transparent pricing. No subscription. No hidden fees.
+            </p>
+            <div class="pricing">
+                <div class="price-card">
+                    <h3>Individual</h3>
+                    <div class="price">$49</div>
+                    <p style="color: #666; margin-bottom: 20px;">One-time, perpetual license</p>
+                    <ul>
+                        <li>Unlimited Android builds</li>
+                        <li>Unlimited iOS builds (GitHub free tier)</li>
+                        <li>Google Play upload</li>
+                        <li>TestFlight submission</li>
+                        <li>Offline license (no server needed)</li>
+                    </ul>
+                    <a href="#buy" class="cta" style="width: 100%; text-align: center; display: block;">Buy Now</a>
+                </div>
+                <div class="price-card">
+                    <h3>Pro Team</h3>
+                    <div class="price">$199</div>
+                    <p style="color: #666; margin-bottom: 20px;">Up to 5 team members</p>
+                    <ul>
+                        <li>Everything in Individual</li>
+                        <li>5 license seats</li>
+                        <li>Team support email</li>
+                        <li>Priority bug fixes</li>
+                    </ul>
+                    <a href="mailto:evankorial7@gmail.com?subject=Forge%20Pro%20Team%20Inquiry" class="cta" style="width: 100%; text-align: center; display: block;">Contact Us</a>
+                </div>
+            </div>
+            <p style="text-align: center; color: #666; margin-top: 20px;">
+                💡 <strong>Beta testers:</strong> Download free during beta. No license key required yet. Purchase when we launch.
+            </p>
+        </section>
+
+        <!-- Download -->
+        <section id="download">
+            <h2>Download</h2>
+            <p style="font-size: 1.1em; margin-bottom: 20px;">
+                <strong>Forge 1.0.0 (Beta)</strong> — Windows 10+ only
+            </p>
+            <div style="text-align: center;">
+                <a href="https://github.com/evanevoo/forge/releases" class="cta" target="_blank">
+                    📥 Download Forge-1.0.0-portable.exe
+                </a>
+                <p style="color: #666; margin-top: 10px;">~150 MB • No installer needed • Runs from anywhere</p>
+            </div>
+            <p style="margin-top: 30px; color: #666;">
+                <strong>Requirements:</strong>
+            </p>
+            <ul style="margin-left: 20px; color: #666;">
+                <li>Windows 10 or later</li>
+                <li>A React Native or Expo project</li>
+                <li>For iOS: GitHub repo + Apple Developer account</li>
+            </ul>
+        </section>
+
+        <!-- Documentation -->
+        <section id="docs">
+            <h2>Documentation</h2>
+            <p style="font-size: 1.1em; margin-bottom: 20px;">
+                New to Forge? Start here:
+            </p>
+            <ul style="margin-left: 20px; font-size: 1.05em; line-height: 1.8;">
+                <li><a href="https://github.com/evanevoo/forge#readme" target="_blank"><strong>README</strong></a> — Project overview</li>
+                <li><a href="https://github.com/evanevoo/forge/blob/main/HOW_TO.md" target="_blank"><strong>How to Use Forge</strong></a> — Step-by-step guide (Android + iOS)</li>
+                <li><a href="https://github.com/evanevoo/forge/discussions" target="_blank"><strong>Discussions</strong></a> — Questions & feedback</li>
+            </ul>
+        </section>
+
+        <!-- Contact -->
+        <section>
+            <h2>Get in Touch</h2>
+            <p style="text-align: center; margin-bottom: 30px;">
+                Found a bug? Have a feature request? Want to chat about Forge? Drop us a line.
+            </p>
+            <div class="contact-form">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="cta" style="width: 100%; text-align: center; padding: 15px;">Send</button>
+                </form>
+                <p style="text-align: center; color: #666; margin-top: 20px;">
+                    Or email directly: <strong>evankorial7@gmail.com</strong>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>Forge</strong> — Local builds for React Native developers</p>
+        <p>© 2026 Evan Korial • <a href="https://github.com/evanevoo/forge" style="color: #667eea; text-decoration: none;" target="_blank">Open source on GitHub</a></p>
+        <p style="font-size: 0.9em; opacity: 0.8;">Beta v1.0.0 • Windows only</p>
+    </footer>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            // Send via Netlify Forms (you'll need to add netlify attribute to form)
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    'form-name': 'contact',
+                    'name': name,
+                    'email': email,
+                    'message': message
+                })
+            }).then(() => {
+                alert('Thanks! We\'ll get back to you soon.');
+                document.getElementById('contactForm').reset();
+            }).catch(err => {
+                console.error('Error:', err);
+                // Fallback: show mailto link
+                window.location.href = `mailto:evankorial7@gmail.com?subject=Forge%20Feedback&body=${encodeURIComponent(message)}`;
+            });
+        });
+    </script>
+</body>
+</html>

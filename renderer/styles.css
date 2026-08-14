@@ -1,0 +1,321 @@
+:root {
+  --bg: #0f1115;
+  --panel: #161a21;
+  --panel-2: #1c212a;
+  --line: #262d38;
+  --text: #e6e9ef;
+  --muted: #8b95a7;
+  --accent: #ff8b3d;
+  --accent-dim: #a8541f;
+  --ok: #4ec98a;
+  --warn: #e8c26a;
+  --err: #f2685f;
+  --radius: 10px;
+  --mono: ui-monospace, "Cascadia Mono", "Consolas", "SF Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* Flex column instead of a hard-coded header height: the top bar wraps at
+   narrow widths, and any fixed offset there costs you the bottom of the
+   window with no way to scroll to it. */
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------- topbar -- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex: none; flex-wrap: wrap; gap: 8px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #171b23, #12161d);
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand .mark { color: var(--accent); font-size: 26px; line-height: 1; }
+.brand h1 { margin: 0; font-size: 17px; letter-spacing: .3px; }
+.brand .sub { margin: 0; color: var(--muted); font-size: 12px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+/* ------------------------------------------------------------- layout -- */
+/* ONE scroller, not two.
+   The previous version gave the left column its own overflow, which meant the
+   wheel did nothing whenever the pointer sat over the log panel, and at narrow
+   widths the grid squeezed the left column to a sliver and clipped the rest
+   with no way to reach it. Now the whole layout scrolls like a page, and the
+   log panel sticks alongside it with its own internal scroll. */
+.layout {
+  display: grid;
+  /* minmax(0,…) rather than a px minimum: a fixed minimum makes the grid wider
+     than the window when it's restored down, and the overflow is unreachable. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-auto-rows: min-content;
+  align-items: start;
+  gap: 14px;
+  padding: 14px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.left {
+  min-width: 0;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.right {
+  min-width: 0;
+  display: flex; flex-direction: column;
+  position: sticky;
+  top: 0;
+  /* topbar + the layout's own vertical padding */
+  height: calc(100vh - 90px);
+  min-height: 320px;
+}
+
+/* Below this width two columns stop being readable — stack them. Both are
+   content-height; the layout keeps scrolling as one page. */
+@media (max-width: 940px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .right { position: static; height: 60vh; }
+}
+
+/* -------------------------------------------------------------- cards -- */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-2);
+}
+.card-head h2 { margin: 0; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 9px; }
+.step {
+  display: inline-grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent-dim); color: #fff; font-size: 11px; font-weight: 700;
+}
+.card-body { padding: 13px 14px; display: flex; flex-direction: column; gap: 10px; }
+
+/* --------------------------------------------------------------- bits -- */
+.row { display: flex; align-items: center; flex-wrap: wrap; }
+.row.gap { gap: 8px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.warn { color: var(--warn); }
+code { font-family: var(--mono); font-size: 12px; color: #cdd6e3; word-break: break-all; }
+
+.kv { display: grid; grid-template-columns: 130px 1fr; gap: 8px; align-items: baseline; font-size: 13px; }
+.kv > span:first-child { color: var(--muted); }
+
+.empty { color: var(--muted); font-size: 13px; }
+
+.errline {
+  font-size: 12.5px; color: var(--err);
+  background: rgba(242,104,95,.08);
+  border-left: 2px solid var(--err);
+  padding: 6px 9px; border-radius: 3px;
+}
+
+.warnings { display: flex; flex-direction: column; gap: 4px; }
+.warnings div {
+  font-size: 12px; color: var(--warn);
+  background: rgba(232,194,106,.08);
+  border-left: 2px solid var(--warn);
+  padding: 5px 8px; border-radius: 3px;
+}
+
+/* ------------------------------------------------------------ buttons -- */
+.btn {
+  background: #232a35; color: var(--text);
+  border: 1px solid var(--line); border-radius: 7px;
+  padding: 7px 12px; font-size: 13px; cursor: pointer;
+  transition: background .12s, border-color .12s;
+}
+.btn:hover:not(:disabled) { background: #2b3441; border-color: #38424f; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #1a1005; font-weight: 600; }
+.btn.primary:hover:not(:disabled) { background: #ff9a56; }
+.btn.ghost { background: transparent; }
+.btn.danger { background: #3a1f1f; border-color: #5a2b2b; color: #ffb4ae; }
+.btn.small { padding: 5px 9px; font-size: 12px; }
+
+/* ------------------------------------------------------------- checks -- */
+.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.checks li { display: grid; grid-template-columns: 18px 1fr; gap: 9px; align-items: start; }
+.checks .dot { font-size: 13px; line-height: 1.5; }
+.checks .dot.ok { color: var(--ok); }
+.checks .dot.bad { color: var(--err); }
+.checks .label { font-size: 13px; }
+.checks .label b { font-weight: 600; }
+.checks .detail {
+  color: var(--muted); font-size: 11.5px; font-family: var(--mono);
+  white-space: pre-wrap; margin-top: 2px;
+}
+
+/* ---------------------------------------------------------- keystores -- */
+.keystores { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.keystores li {
+  border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px;
+  display: flex; gap: 10px; align-items: flex-start; background: var(--panel-2);
+}
+.keystores li.selected { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(255,139,61,.25) inset; }
+.keystores .ks-main { flex: 1; min-width: 0; }
+.keystores .ks-title { font-weight: 600; font-size: 13px; display: flex; gap: 8px; align-items: center; }
+.keystores .ks-sub { color: var(--muted); font-size: 11.5px; font-family: var(--mono); word-break: break-all; }
+.pill {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .5px;
+  padding: 2px 6px; border-radius: 20px; border: 1px solid var(--line); color: var(--muted);
+}
+.pill.locked { color: var(--warn); border-color: var(--warn); }
+.pill.missing { color: var(--err); border-color: var(--err); }
+.pill.gen { color: var(--warn); border-color: rgba(232,194,106,.4); }
+
+.gradle-status { font-size: 12px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 9px; }
+.gradle-status b { color: var(--text); }
+
+/* ------------------------------------------------------------ targets -- */
+.targets { gap: 16px; }
+.radio { display: flex; align-items: center; gap: 7px; font-size: 13px; cursor: pointer; }
+.radio em { color: var(--muted); font-style: normal; font-size: 12px; }
+
+/* ----------------------------------------------------------- artifact -- */
+.artifact {
+  border: 1px solid var(--ok); border-radius: 8px; padding: 11px;
+  background: rgba(78,201,138,.07); display: flex; flex-direction: column; gap: 8px;
+}
+.artifact-head { color: var(--ok); font-weight: 600; font-size: 13px; }
+.artifact.bad { border-color: var(--err); background: rgba(242,104,95,.07); }
+.artifact.bad .artifact-head { color: var(--err); }
+.sigline { font-size: 12px; color: var(--muted); font-family: var(--mono); word-break: break-all; }
+.artifact.bad .sigline { color: var(--err); }
+
+/* ---------------------------------------------------------------- log -- */
+.log-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2px 10px;
+}
+.log-head h2 { margin: 0; font-size: 14px; }
+.log {
+  flex: 1; margin: 0; min-height: 0; overflow: auto;
+  background: #0a0c10; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px; font-family: var(--mono); font-size: 12px; line-height: 1.55;
+  white-space: pre-wrap; word-break: break-word; color: #c8d1de;
+}
+.log .l-err { color: #ff9c94; }
+.log .l-forge { color: var(--accent); }
+.log .l-ok { color: var(--ok); }
+
+.badge {
+  font-size: 11px; padding: 3px 9px; border-radius: 20px;
+  border: 1px solid var(--line); color: var(--muted);
+}
+.badge.running { color: var(--accent); border-color: var(--accent); }
+.badge.done { color: var(--ok); border-color: var(--ok); }
+.badge.failed { color: var(--err); border-color: var(--err); }
+
+/* -------------------------------------------------------------- modal -- */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(6,8,11,.72);
+  display: grid; place-items: center; z-index: 50; padding: 24px;
+}
+.modal {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 20px; width: min(620px, 100%); max-height: 88vh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 12px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.5);
+}
+.modal h3 { margin: 0; font-size: 16px; }
+.modal p { margin: 0; }
+.modal label { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: var(--muted); }
+.modal input, .modal select {
+  background: #0d1015; border: 1px solid var(--line); border-radius: 7px;
+  padding: 8px 10px; color: var(--text); font-size: 13px; font-family: inherit; width: 100%;
+}
+.modal input:focus, .modal select:focus { outline: none; border-color: var(--accent); }
+.modal .row input { flex: 1; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.modal-error { color: var(--err); font-size: 12.5px; min-height: 1em; white-space: pre-wrap; }
+.fingerprint {
+  background: #0d1015; border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px; font-family: var(--mono); font-size: 11.5px; color: #cdd6e3;
+  white-space: pre-wrap; word-break: break-all;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #2a323d; border-radius: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.badge-btn {
+  cursor: pointer; font-family: inherit;
+  background: transparent; transition: border-color .15s, color .15s;
+}
+.badge-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.version-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap;
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 11px; background: var(--panel-2);
+}
+.version-row b { font-size: 13px; margin-left: 6px; }
+.version-row select {
+  background: #0d1015; border: 1px solid var(--line); border-radius: 7px;
+  padding: 6px 8px; color: var(--text); font: inherit; font-size: 12px;
+}
+
+.modal-label { display:flex; flex-direction:column; gap:5px; font-size:12.5px; color:var(--muted); }
+#playNotes, #playTrack {
+  background:#0d1015; border:1px solid var(--line); border-radius:7px;
+  padding:7px 9px; color:var(--text); font:inherit; font-size:13px; resize:vertical;
+}
+#playNotes:focus, #playTrack:focus { outline:none; border-color:var(--accent); }
+
+/* ---------------------------------------------------------------- iOS -- */
+
+.ok { color: var(--ok); }
+
+/* The iOS card is a genuine sequence — each step is only meaningful once the
+   one above it is done — so it is numbered rather than a flat list of buttons. */
+.steps { list-style: none; counter-reset: iosstep; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.steps > li {
+  counter-increment: iosstep;
+  position: relative;
+  padding-left: 30px;
+  display: flex; flex-direction: column; gap: 6px;
+  min-width: 0;
+}
+.steps > li::before {
+  content: counter(iosstep);
+  position: absolute; left: 0; top: 1px;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 11px; font-variant-numeric: tabular-nums;
+  background: #1b2230; color: var(--muted);
+  border: 1px solid var(--line);
+}
+.steps > li + li { border-top: 1px solid var(--line); padding-top: 14px; }
+.steps > li + li::before { top: 15px; }
+
+.secret-rows { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.secret-row {
+  display: grid; grid-template-columns: minmax(0, 12rem) minmax(0, 1fr) auto;
+  gap: 10px; align-items: center;
+  padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px;
+}
+.secret-row code { color: #cdd6e3; }

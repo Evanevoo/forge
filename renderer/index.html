@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self';" />
+  <title>Forge</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark">◆</span>
+      <div>
+        <h1>Forge</h1>
+        <p class="sub">Local builds &amp; signing for Expo / React Native — Android on Windows, iOS on macOS CI</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="badge badge-btn" id="licenseBadge" title="Licence status"></button>
+      <span id="encBadge" class="badge" title="Password storage backend"></span>
+      <span id="appVersion" class="muted small"></span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="left">
+
+      <!-- 1. PROJECT -->
+      <article class="card" id="cardProject">
+        <div class="card-head">
+          <h2><span class="step">1</span> Project</h2>
+          <button class="btn" id="btnPickProject">Choose folder…</button>
+        </div>
+        <div class="card-body">
+          <div id="projectEmpty" class="empty">No project selected yet.</div>
+          <div id="projectError" class="errline hidden"></div>
+          <div id="projectInfo" class="hidden">
+            <div class="kv"><span>Name</span><b id="pName"></b></div>
+            <div class="kv"><span>Folder</span><code id="pDir"></code></div>
+            <div class="kv"><span>Application ID</span><code id="pAppId"></code></div>
+            <div class="kv"><span>Expo / RN</span><span id="pVersions"></span></div>
+            <div class="kv"><span>android/</span><span id="pAndroid"></span></div>
+            <div class="kv"><span>ios/</span><span id="pIos"></span></div>
+            <div id="pWarnings" class="warnings"></div>
+            <div id="memWarn" class="warnings hidden">
+              <div id="memWarnText"></div>
+              <div class="row gap" style="margin-top:6px">
+                <button class="btn small" id="btnFixMemory">Fix build memory</button>
+              </div>
+            </div>
+            <div class="row gap">
+              <span class="row gap hidden" id="prebuildGroup">
+                <button class="btn" id="btnPrebuild">Run prebuild</button>
+                <button class="btn ghost" id="btnPrebuildIos" title="Generates the ios/ project. Compiling it still requires a Mac.">Generate ios/</button>
+                <button class="btn ghost" id="btnIosWorkflow" title="Writes .github/workflows/ios-build.yml — builds a signed .ipa on a rented Mac">Add iOS CI workflow</button>
+                <button class="btn ghost" id="btnPrebuildClean" title="expo prebuild --clean regenerates android/ from scratch">Prebuild (clean)</button>
+              </span>
+              <button class="btn ghost" id="btnRefreshProject">Refresh</button>
+            </div>
+            <p class="muted small" id="prebuildNote"></p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. ENVIRONMENT -->
+      <article class="card" id="cardEnv">
+        <div class="card-head">
+          <h2><span class="step">2</span> Prerequisites</h2>
+          <button class="btn ghost" id="btnRecheck">Re-check</button>
+        </div>
+        <div class="card-body">
+          <ul class="checks" id="checkList"></ul>
+          <div class="row gap">
+            <button class="btn ghost small" id="btnPickJdk">Set JDK folder…</button>
+            <button class="btn ghost small" id="btnPickSdk">Set Android SDK folder…</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. SIGNING -->
+      <article class="card" id="cardSigning">
+        <div class="card-head">
+          <h2><span class="step">3</span> Signing key</h2>
+          <div class="row gap">
+            <button class="btn" id="btnImportKs">Import .jks…</button>
+            <button class="btn ghost" id="btnGenKs">Generate new…</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="ksEmpty" class="empty">
+            No keystores yet. Import the key Google Play already expects — generating a
+            new one will not match an app that is already published.
+          </div>
+          <ul class="keystores" id="ksList"></ul>
+          <div class="gradle-status" id="gradleStatus"></div>
+        </div>
+      </article>
+
+      <!-- 4. BUILD -->
+      <article class="card" id="cardBuild">
+        <div class="card-head">
+          <h2><span class="step">4</span> Build</h2>
+        </div>
+        <div class="card-body">
+          <div class="version-row" id="versionRow">
+            <div>
+              <span class="muted small">Version</span>
+              <b id="vCurrent">—</b>
+              <span class="muted small" id="vSync"></span>
+            </div>
+            <div class="row gap">
+              <select id="vName" title="Version name shown to users">
+                <option value="keep">keep name</option>
+                <option value="patch">patch — 1.2.0 → 1.2.1</option>
+                <option value="minor">minor — 1.2.0 → 1.3.0</option>
+                <option value="major">major — 1.2.0 → 2.0.0</option>
+              </select>
+              <button class="btn small" id="btnBump" title="Stores reject an upload whose version code they have seen before">Bump build number</button>
+            </div>
+          </div>
+          <div class="row gap targets">
+            <label class="radio"><input type="radio" name="target" value="bundle" checked /> <span>App Bundle <code>.aab</code> <em>— for Google Play</em></span></label>
+            <label class="radio"><input type="radio" name="target" value="apk" /> <span>APK <code>.apk</code> <em>— for direct install</em></span></label>
+          </div>
+          <label class="radio" title="Sentry, Crashlytics and similar add an upload task to release builds that fails without a cloud auth token.">
+            <input type="checkbox" id="chkSkipUploads" checked />
+            <span>Skip crash-reporter symbol uploads <em>— Sentry, Crashlytics, Datadog</em></span>
+          </label>
+          <div class="row gap">
+            <button class="btn primary" id="btnBuild">Build release</button>
+            <button class="btn danger hidden" id="btnCancel">Cancel</button>
+            <button class="btn ghost" id="btnClean">Gradle clean</button>
+          </div>
+          <div id="artifact" class="artifact hidden">
+            <div class="artifact-head">Build complete</div>
+            <code id="artifactPath"></code>
+            <div id="artifactSig" class="sigline hidden"></div>
+            <div class="row gap">
+              <button class="btn" id="btnReveal">Open containing folder</button>
+              <span class="muted small" id="artifactMeta"></span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5. SUBMIT -->
+      <article class="card" id="cardSubmit">
+        <div class="card-head">
+          <h2><span class="step">5</span> Submit to Google Play</h2>
+        </div>
+        <div class="card-body">
+          <div class="row gap">
+            <button class="btn" id="btnPickSa">Service account JSON…</button>
+            <span class="muted small" id="saState">not set</span>
+          </div>
+          <div class="row gap">
+            <select id="playTrack">
+              <option value="internal">Internal testing — live in minutes</option>
+              <option value="alpha">Closed testing (alpha)</option>
+              <option value="beta">Open testing (beta)</option>
+              <option value="production">Production</option>
+            </select>
+            <label class="radio"><input type="checkbox" id="playDraft" /> <span>Upload as draft</span></label>
+          </div>
+          <label class="modal-label">Release notes
+            <textarea id="playNotes" rows="2" placeholder="What changed in this build"></textarea>
+          </label>
+          <div class="row gap">
+            <button class="btn primary" id="btnPublish" disabled>Upload latest .aab</button>
+            <span class="muted small" id="publishTarget"></span>
+          </div>
+          <p class="muted small">
+            Nothing becomes visible until the upload commits, so a failure part-way leaves your
+            listing untouched. The service-account key is read from your disk and never sent anywhere
+            but Google.
+          </p>
+        </div>
+      </article>
+
+      <!-- 6. iOS -->
+      <article class="card" id="cardIos">
+        <div class="card-head">
+          <h2><span class="step">6</span> iOS build &amp; TestFlight</h2>
+          <span class="muted small" id="iosRepo"></span>
+        </div>
+        <div class="card-body">
+          <p class="muted small">
+            Windows cannot run Xcode, so the compile happens on a macOS runner rented by the minute
+            from GitHub. Everything either side of it — the signing identity, the credentials, starting
+            the build, collecting the <code>.ipa</code> — happens here.
+          </p>
+
+          <ol class="steps" id="iosSteps">
+            <li id="iosStepBundle">
+              <div class="row gap">
+                <strong>Bundle identifier</strong>
+                <span class="muted small" id="iosBundleState">—</span>
+              </div>
+              <div class="row gap">
+                <input type="text" id="iosBundleId" placeholder="com.evanevoo.scanified" spellcheck="false" />
+                <button class="btn ghost small" id="btnSetBundle">Save</button>
+              </div>
+            </li>
+
+            <li id="iosStepCsr">
+              <div class="row gap">
+                <strong>Signing certificate</strong>
+                <span class="muted small" id="iosCertState">not created</span>
+              </div>
+              <div class="row gap">
+                <button class="btn" id="btnMakeCsr">Create request…</button>
+                <button class="btn" id="btnRevealCsr">Open folder</button>
+                <button class="btn" id="btnInstallCert">Install Apple's .cer…</button>
+              </div>
+              <p class="muted small">
+                Forge makes the key pair and the request. You upload the request at
+                developer.apple.com → Certificates → + → <em>Apple Distribution</em>, download the
+                <code>.cer</code> it gives back, and install it here. No Mac involved.
+              </p>
+            </li>
+
+            <li id="iosStepProfile">
+              <div class="row gap">
+                <strong>Provisioning profile</strong>
+                <span class="muted small" id="iosProfileState">not set</span>
+              </div>
+              <div class="row gap">
+                <button class="btn" id="btnPickProfile">Select .mobileprovision…</button>
+                <button class="btn ghost" id="btnPickAsc">App Store Connect key (.p8)…</button>
+              </div>
+              <p class="muted small">
+                Create it at developer.apple.com → Profiles → + → <em>App Store Connect</em>, against
+                the same certificate. The <code>.p8</code> is only needed to send builds to TestFlight.
+              </p>
+            </li>
+
+            <li id="iosStepSecrets">
+              <div class="row gap">
+                <strong>GitHub secrets</strong>
+                <span class="muted small">paste these once, into the repository</span>
+              </div>
+              <div class="row gap">
+                <button class="btn" id="btnShowSecrets">Show values to copy</button>
+                <button class="btn ghost" id="btnOpenSecretsPage">Open the secrets page</button>
+              </div>
+              <div id="iosSecretRows" class="secret-rows hidden"></div>
+            </li>
+
+            <li id="iosStepRun">
+              <div class="row gap">
+                <strong>Build</strong>
+                <span class="muted small" id="iosRunState"></span>
+              </div>
+              <label class="modal-label">GitHub token
+                <div class="row gap">
+                  <input type="password" id="iosToken" placeholder="github_pat_…" autocomplete="off" />
+                  <button class="btn ghost small" id="btnSaveToken">Save</button>
+                </div>
+              </label>
+              <div class="row gap">
+                <input type="text" id="iosRef" placeholder="main" style="max-width:9rem" />
+                <select id="iosConfig">
+                  <option value="Release">Release</option>
+                  <option value="Debug">Debug</option>
+                </select>
+                <label class="radio"><input type="checkbox" id="iosTestflight" /> <span>Send to TestFlight</span></label>
+              </div>
+              <div class="row gap">
+                <button class="btn primary" id="btnIosBuild">Build on macOS runner</button>
+                <button class="btn" id="btnIosFetch" disabled>Download .ipa</button>
+                <a class="btn ghost hidden" id="btnIosOpenRun" href="#" target="_blank" rel="noreferrer">View on GitHub</a>
+              </div>
+            </li>
+          </ol>
+
+          <p class="muted small">
+            macOS runners bill at ten times the Linux rate, so the free tier's 2,000 minutes are about
+            200 macOS minutes — roughly 8 to 13 iOS builds a month before it costs anything.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <section class="right">
+      <div class="log-head">
+        <h2>Output</h2>
+        <div class="row gap">
+          <span id="jobState" class="badge idle">idle</span>
+          <button class="btn ghost small" id="btnCopyLog">Copy</button>
+          <button class="btn ghost small" id="btnClearLog">Clear</button>
+        </div>
+      </div>
+      <pre id="log" class="log" tabindex="0"></pre>
+    </section>
+  </main>
+
+  <!-- ------------------------------------------------------ modals ---- -->
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+
+    <div class="modal hidden" id="modalImport">
+      <h3>Import an existing keystore</h3>
+      <p class="muted small">
+        Use this for a key Google Play already knows about. Forge reads it with
+        <code>keytool</code>, shows you its SHA-1 so you can confirm the match, and stores the
+        password encrypted with Windows DPAPI — never in plaintext, never in your project.
+      </p>
+      <label>Keystore file
+        <div class="row gap">
+          <input type="text" id="impPath" placeholder="C:\…\upload-key.jks" />
+          <button class="btn ghost" id="btnBrowseKs">Browse…</button>
+        </div>
+      </label>
+      <label>Keystore password
+        <input type="password" id="impStorePass" autocomplete="off" />
+      </label>
+      <div class="row gap">
+        <button class="btn" id="btnProbe">Read keystore</button>
+        <span class="muted small" id="impProbeMsg"></span>
+      </div>
+      <label>Alias
+        <select id="impAlias"><option value="">— read the keystore first —</option></select>
+      </label>
+      <label>Key password <span class="muted small">(leave blank if it is the same as the keystore password)</span>
+        <input type="password" id="impKeyPass" autocomplete="off" />
+      </label>
+      <div id="impFingerprint" class="fingerprint hidden"></div>
+      <div class="modal-actions">
+        <button class="btn ghost" data-close>Cancel</button>
+        <button class="btn primary" id="btnDoImport" disabled>Save keystore</button>
+      </div>
+      <div class="modal-error" id="impError"></div>
+    </div>
+
+    <div class="modal hidden" id="modalGen">
+      <h3>Generate a new keystore</h3>
+      <p class="warn small">
+        Only for an app that has never been published. A new key will not match an
+        app already on Google Play — that upload would be rejected.
+      </p>
+      <label>Save to
+        <div class="row gap">
+          <input type="text" id="genPath" placeholder="C:\Users\you\keys\upload-key.jks" />
+          <button class="btn ghost" id="btnGenBrowse">Choose…</button>
+        </div>
+      </label>
+      <div class="grid2">
+        <label>Alias <input type="text" id="genAlias" value="upload" /></label>
+        <label>Validity (days) <input type="number" id="genValidity" value="10950" min="365" /></label>
+        <label>Keystore password <input type="password" id="genStorePass" autocomplete="off" /></label>
+        <label>Confirm password <input type="password" id="genStorePass2" autocomplete="off" /></label>
+        <label>Common name (CN) <input type="text" id="genCN" placeholder="Your name or app name" /></label>
+        <label>Organisation (O) <input type="text" id="genO" /></label>
+        <label>City (L) <input type="text" id="genL" /></label>
+        <label>Country code (C) <input type="text" id="genC" maxlength="2" placeholder="CA" /></label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn ghost" data-close>Cancel</button>
+        <button class="btn primary" id="btnDoGen">Generate</button>
+      </div>
+      <div class="modal-error" id="genError"></div>
+    </div>
+
+    <div class="modal hidden" id="modalCsr">
+      <h3>Create the iOS signing request</h3>
+      <p class="muted small">
+        This makes an RSA key pair on this machine and a certificate request to upload to Apple.
+        The private half never leaves your disk — Apple only ever sees the request.
+      </p>
+      <label>Your name <input type="text" id="csrName" placeholder="Evan Korial" /></label>
+      <label>Apple ID email <input type="text" id="csrEmail" placeholder="you@example.com" /></label>
+      <label>Country code <input type="text" id="csrCountry" maxlength="2" placeholder="CA" /></label>
+      <label>Certificate password
+        <input type="password" id="csrPassword" autocomplete="off" />
+      </label>
+      <p class="muted small">
+        You'll paste this password into GitHub as <code>IOS_CERT_PASSWORD</code>. Forge stores it
+        encrypted with Windows DPAPI, same as your Android keystore passwords.
+      </p>
+      <label class="radio"><input type="checkbox" id="csrForce" /> <span>Replace the existing key (invalidates the certificate Apple issued against it)</span></label>
+      <div class="modal-actions">
+        <button class="btn ghost" data-close>Cancel</button>
+        <button class="btn primary" id="btnDoCsr">Create request</button>
+      </div>
+      <div class="modal-error" id="csrError"></div>
+    </div>
+
+    <div class="modal hidden" id="modalLicense">
+      <h3>Forge licence</h3>
+      <p class="muted small" id="licenseState"></p>
+      <label>Licence key
+        <input type="text" id="licenseKey" placeholder="FORGE-1.…" autocomplete="off" spellcheck="false" />
+      </label>
+      <p class="muted small">
+        Your key was emailed to you after purchase. It is checked on this machine —
+        Forge never contacts a licence server, so activation works offline.
+      </p>
+      <div class="modal-actions">
+        <button class="btn ghost" id="btnLicenseRemove">Remove key</button>
+        <button class="btn ghost" data-close>Close</button>
+        <button class="btn primary" id="btnLicenseActivate">Activate</button>
+      </div>
+      <div class="modal-error" id="licenseError"></div>
+    </div>
+
+    <div class="modal hidden" id="modalUnlock">
+      <h3>Unlock keystore</h3>
+      <p class="muted small" id="unlockWhich"></p>
+      <label>Keystore password <input type="password" id="unlStorePass" autocomplete="off" /></label>
+      <label>Key password <span class="muted small">(blank = same)</span><input type="password" id="unlKeyPass" autocomplete="off" /></label>
+      <div class="modal-actions">
+        <button class="btn ghost" data-close>Cancel</button>
+        <button class="btn primary" id="btnDoUnlock">Unlock</button>
+      </div>
+      <div class="modal-error" id="unlError"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
