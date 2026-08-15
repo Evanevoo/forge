@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.forge-data/
+*.log
+
+# vendor signing key must never be committed
+*.pem
+.forge-signing/
+sales.jsonl
