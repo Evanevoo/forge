@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forge — Local Builds for React Native</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,28 +12,67 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f9f9f9;
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f9fc;
+            --bg-tertiary: #eef2f7;
+            --text-primary: #1a1d29;
+            --text-secondary: #4a5568;
+            --text-tertiary: #8892a8;
+            --border-color: #e2e8f0;
+            --accent-primary: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-light: #dbeafe;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
         }
 
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            font-size: 16px;
+        }
+
+        /* Header - Clean, minimal, professional */
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 60px 20px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 40px 20px;
             text-align: center;
         }
 
         header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
         }
 
         header p {
-            font-size: 1.2em;
-            opacity: 0.95;
+            font-size: 1.125em;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .beta-badge {
+            display: inline-block;
+            background: var(--accent-light);
+            color: var(--accent-primary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .container {
@@ -43,140 +83,265 @@
 
         section {
             padding: 60px 20px;
-            background: white;
-            margin: 30px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 0;
+            background: var(--bg-primary);
+        }
+
+        section:nth-child(even) {
+            background: var(--bg-secondary);
         }
 
         section h2 {
             font-size: 2em;
-            margin-bottom: 30px;
-            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
         }
 
+        section > p {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            line-height: 1.7;
+            max-width: 700px;
+        }
+
+        /* Features Grid */
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 30px 0;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin: 40px 0;
         }
 
         .feature {
-            padding: 20px;
-            border-left: 4px solid #667eea;
-            background: #f9f9f9;
-            border-radius: 4px;
+            padding: 32px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .feature:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-md);
         }
 
         .feature h3 {
-            color: #667eea;
-            margin-bottom: 10px;
+            font-size: 1.25em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
         }
 
+        .feature p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Buttons */
         .cta {
             display: inline-block;
-            background: #667eea;
+            background: var(--accent-primary);
             color: white;
-            padding: 15px 40px;
-            border-radius: 5px;
+            padding: 12px 28px;
+            border-radius: 6px;
             text-decoration: none;
-            font-weight: bold;
-            transition: background 0.3s;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.2s ease;
             margin: 10px 10px 10px 0;
             border: none;
             cursor: pointer;
-            font-size: 1em;
+            text-align: center;
         }
 
         .cta:hover {
-            background: #764ba2;
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .cta-secondary {
-            background: #f0f0f0;
-            color: #333;
-            border: 2px solid #667eea;
+            background: var(--bg-secondary);
+            color: var(--accent-primary);
+            border: 2px solid var(--accent-primary);
         }
 
         .cta-secondary:hover {
-            background: #e8e8e8;
+            background: var(--accent-light);
         }
 
+        /* Comparison Table */
+        .comparison {
+            overflow-x: auto;
+            margin: 40px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95em;
+        }
+
+        th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        th:first-child {
+            font-weight: 700;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td:first-child {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .checkmark {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .xmark {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        /* Pricing Cards */
         .pricing {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin: 30px 0;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin: 40px 0;
         }
 
         .price-card {
-            border: 2px solid #ddd;
-            padding: 30px;
+            padding: 40px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
             border-radius: 8px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .price-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
-            border-color: #667eea;
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-lg);
         }
 
         .price-card h3 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .price-card > p:nth-of-type(1) {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            margin-bottom: 24px;
         }
 
         .price-card .price {
             font-size: 2.5em;
-            color: #667eea;
-            margin: 20px 0;
-            font-weight: bold;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin: 16px 0 8px 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .price-card .price-period {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
         }
 
         .price-card ul {
             list-style: none;
-            margin: 20px 0;
-            text-align: left;
+            margin: 24px 0;
+            flex-grow: 1;
         }
 
         .price-card li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
         }
 
         .price-card li:before {
-            content: "✓ ";
-            color: #667eea;
-            font-weight: bold;
-            margin-right: 10px;
+            content: "✓";
+            color: var(--success);
+            font-weight: 700;
+            min-width: 20px;
         }
 
+        .price-card .cta {
+            margin-top: 24px;
+            width: 100%;
+        }
+
+        /* Forms */
         .contact-form {
-            max-width: 600px;
-            margin: 30px auto;
+            max-width: 500px;
+            margin: 40px auto;
+            background: var(--bg-primary);
+            padding: 0;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95em;
         }
 
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             font-family: inherit;
             font-size: 1em;
+            color: var(--text-primary);
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-light);
         }
 
         .form-group textarea {
@@ -184,63 +349,52 @@
             min-height: 120px;
         }
 
+        /* Footer */
         footer {
-            background: #333;
+            background: var(--text-primary);
             color: white;
             text-align: center;
-            padding: 30px 20px;
+            padding: 40px 20px;
             margin-top: 60px;
+            border-top: 1px solid var(--border-color);
         }
 
         footer p {
-            margin: 10px 0;
+            margin: 8px 0;
+            font-size: 0.95em;
         }
 
-        .beta-badge {
-            display: inline-block;
-            background: #ff6b6b;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
-            margin-left: 10px;
+        footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+            font-weight: 600;
         }
 
-        .comparison {
-            overflow-x: auto;
-            margin: 30px 0;
+        footer a:hover {
+            text-decoration: underline;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
 
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+            section {
+                padding: 40px 20px;
+            }
 
-        th {
-            background: #667eea;
-            color: white;
-            font-weight: bold;
-        }
+            section h2 {
+                font-size: 1.6em;
+            }
 
-        tr:hover {
-            background: #f9f9f9;
-        }
+            .price-card {
+                padding: 24px;
+            }
 
-        .checkmark {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .xmark {
-            color: #dc3545;
-            font-weight: bold;
+            .price-card .price {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
@@ -371,8 +525,8 @@
             <div class="pricing">
                 <div class="price-card">
                     <h3>Individual</h3>
+                    <p>One-time, perpetual license</p>
                     <div class="price">$49</div>
-                    <p style="color: #666; margin-bottom: 20px;">One-time, perpetual license</p>
                     <ul>
                         <li>Unlimited Android builds</li>
                         <li>Unlimited iOS builds (GitHub free tier)</li>
@@ -384,8 +538,8 @@
                 </div>
                 <div class="price-card">
                     <h3>Pro Team</h3>
+                    <p>Up to 5 team members</p>
                     <div class="price">$199</div>
-                    <p style="color: #666; margin-bottom: 20px;">Up to 5 team members</p>
                     <ul>
                         <li>Everything in Individual</li>
                         <li>5 license seats</li>
@@ -395,7 +549,7 @@
                     <a href="mailto:evankorial7@gmail.com?subject=Forge%20Pro%20Team%20Inquiry" class="cta" style="width: 100%; text-align: center; display: block;">Contact Us</a>
                 </div>
             </div>
-            <p style="text-align: center; color: #666; margin-top: 20px;">
+            <p style="text-align: center; color: var(--text-secondary); margin-top: 20px;">
                 💡 <strong>Beta testers:</strong> Download free during beta. No license key required yet. Purchase when we launch.
             </p>
         </section>
@@ -410,12 +564,12 @@
                 <a href="https://github.com/evanevoo/forge/releases" class="cta" target="_blank">
                     📥 Download Forge-1.0.0-portable.exe
                 </a>
-                <p style="color: #666; margin-top: 10px;">~150 MB • No installer needed • Runs from anywhere</p>
+                <p style="color: var(--text-secondary); margin-top: 10px;">~150 MB • No installer needed • Runs from anywhere</p>
             </div>
-            <p style="margin-top: 30px; color: #666;">
+            <p style="margin-top: 30px; color: var(--text-secondary);">
                 <strong>Requirements:</strong>
             </p>
-            <ul style="margin-left: 20px; color: #666;">
+            <ul style="margin-left: 20px; color: var(--text-secondary);">
                 <li>Windows 10 or later</li>
                 <li>A React Native or Expo project</li>
                 <li>For iOS: GitHub repo + Apple Developer account</li>
@@ -442,7 +596,7 @@
                 Found a bug? Have a feature request? Want to chat about Forge? Drop us a line.
             </p>
             <div class="contact-form">
-                <form id="contactForm">
+                <form name="contact" method="POST" netlify>
                     <div class="form-group">
                         <label for="name">Your Name</label>
                         <input type="text" id="name" name="name" required>
@@ -457,7 +611,7 @@
                     </div>
                     <button type="submit" class="cta" style="width: 100%; text-align: center; padding: 15px;">Send</button>
                 </form>
-                <p style="text-align: center; color: #666; margin-top: 20px;">
+                <p style="text-align: center; color: var(--text-secondary); margin-top: 20px;">
                     Or email directly: <strong>evankorial7@gmail.com</strong>
                 </p>
             </div>
@@ -466,37 +620,8 @@
 
     <footer>
         <p><strong>Forge</strong> — Local builds for React Native developers</p>
-        <p>© 2026 Evan Korial • <a href="https://github.com/evanevoo/forge" style="color: #667eea; text-decoration: none;" target="_blank">Open source on GitHub</a></p>
+        <p>© 2026 Evan Korial • <a href="https://github.com/evanevoo/forge" target="_blank">Open source on GitHub</a></p>
         <p style="font-size: 0.9em; opacity: 0.8;">Beta v1.0.0 • Windows only</p>
     </footer>
-
-    <script>
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-
-            // Send via Netlify Forms (you'll need to add netlify attribute to form)
-            fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                    'form-name': 'contact',
-                    'name': name,
-                    'email': email,
-                    'message': message
-                })
-            }).then(() => {
-                alert('Thanks! We\'ll get back to you soon.');
-                document.getElementById('contactForm').reset();
-            }).catch(err => {
-                console.error('Error:', err);
-                // Fallback: show mailto link
-                window.location.href = `mailto:evankorial7@gmail.com?subject=Forge%20Feedback&body=${encodeURIComponent(message)}`;
-            });
-        });
-    </script>
 </body>
 </html>
