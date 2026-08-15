@@ -3,7 +3,7 @@
   "productName": "Forge",
   "version": "1.0.0",
   "private": true,
-  "description": "Local Android build & signing tool for Expo / React Native projects",
+  "description": "Build & sign Expo/React Native apps locally on Windows (Android) or via macOS CI (iOS), with Play Store & TestFlight submission",
   "main": "src/main.js",
   "author": "Evan",
   "license": "MIT",

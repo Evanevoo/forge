@@ -1,11 +1,13 @@
 # Forge
 
-A Windows desktop app for building and signing Android releases of Expo /
-React Native projects **entirely on your own machine** — no EAS, no cloud
-build queue, no per-build cost.
+A Windows desktop app for building and signing Expo / React Native projects
+**entirely on your own machine** (Android) or on rented macOS CI (iOS) — no EAS,
+no cloud build queue, no per-build cost.
 
-Android only, deliberately. iOS needs a Mac and Xcode; that's an Apple
-platform requirement, not a gap in this tool.
+**Android:** Built locally with your own key, on Windows.  
+**iOS:** Compiled on a macOS GitHub Actions runner (bills in minutes, typically
+$0–20/month), signed with your certificate, submitted to TestFlight from your
+machine.
 
 ---
 
