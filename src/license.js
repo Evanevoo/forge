@@ -22,12 +22,14 @@ const crypto = require('crypto');
 
 /** Public half of the vendor signing key. Replace via tools/mint-license.js --keygen. */
 const PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
-MCowBQYDK2VwAyEAMiOj8B6LMFP8/DAqb5x6xngpggMLLlOWuV57PFbL6Wg=
+MCowBQYDK2VwAyEAigOncZDogInUfxxHnUyiJs8NFdyf78aCSa6ZlKx5rv0=
 -----END PUBLIC KEY-----`;
 
 const KEY_PREFIX = 'FORGE-1';
 /** Successful builds allowed before a licence is required. */
-const TRIAL_BUILDS = 2;
+const TRIAL_BUILDS = 40;
+/** Beta expiration date: September 5, 2026 at 11:59 PM UTC */
+const BETA_EXPIRATION = new Date('2026-09-05T23:59:59Z').getTime();
 
 let app = null;
 try { ({ app } = require('electron')); } catch (_) { /* testable outside Electron */ }
@@ -150,6 +152,9 @@ function status() {
   const state = readState();
   const check = state.key ? module.exports.verifyKey(state.key) : null;
 
+  // Check if beta period has expired
+  const betaExpired = Date.now() > BETA_EXPIRATION;
+
   if (check && check.valid) {
     return {
       licensed: true,
@@ -160,6 +165,19 @@ function status() {
       trialTotal: TRIAL_BUILDS,
       trialRemaining: 0,
       message: 'Licensed to ' + (check.payload.name || check.payload.email || 'you') + '.',
+    };
+  }
+
+  if (betaExpired) {
+    return {
+      licensed: false,
+      betaExpired: true,
+      invalidStoredKey: !!(check && !check.valid),
+      storedKeyReason: check && !check.valid ? check.reason : null,
+      trialBuilds: state.trialBuilds,
+      trialTotal: TRIAL_BUILDS,
+      trialRemaining: 0,
+      message: 'Beta period has ended. Download Forge v1.0.0-final and activate a licence key to continue building.',
     };
   }
 
@@ -181,6 +199,14 @@ function status() {
 function canBuild() {
   const s = status();
   if (s.licensed) return { allowed: true, licensed: true };
+  if (s.betaExpired) {
+    return {
+      allowed: false,
+      licensed: false,
+      betaExpired: true,
+      reason: 'Beta period has ended. Download Forge v1.0.0-final and activate a licence key to continue building.',
+    };
+  }
   if (s.trialRemaining > 0) {
     return { allowed: true, licensed: false, trialRemaining: s.trialRemaining };
   }
